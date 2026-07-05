@@ -1,0 +1,7 @@
+[2026-07-04 16:42:51:4251] [[31merror[39m]: [31mUnhandled Exception on POST /api/customers: Cannot read properties of undefined (reading 'addressLine1')[39m
+[2026-07-04 16:42:59:4259] [[31merror[39m]: [31mUnhandled Exception on POST /api/customers: Cannot read properties of undefined (reading 'addressLine1')[39m
+[2026-07-04 16:43:03:433] [[31merror[39m]: [31mUnhandled Exception on POST /api/customers: Cannot read properties of undefined (reading 'addressLine1')[39m
+[2026-07-04 16:43:03:433] [[31merror[39m]: [31mUnhandled Exception on POST /api/customers: Cannot read properties of undefined (reading 'addressLine1')[39m
+[2026-07-04 16:43:03:433] [[31merror[39m]: [31mUnhandled Exception on POST /api/customers: Cannot read properties of undefined (reading 'addressLine1')[39m
+[2026-07-04 21:14:48:1448] [[31merror[39m]: [31mUnhandled Exception on POST /api/customers: Cannot read properties of undefined (reading 'addressLine1')[39m
+[2026-07-05 17:40:50:4050] [[31merror[39m]: [31mUnhandled Exception on PATCH /api/customers/652305fc-4ca7-4ec8-baa8-fb886385bdb3: Cannot destructure property 'id' of 'req.params' as it is undefined.[39m

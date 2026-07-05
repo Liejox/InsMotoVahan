@@ -1,0 +1,244 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  name      String   @unique // 'ADMIN' or 'AGENT'
+  users     User[]
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model User {
+  id               String             @id @default(uuid())
+  email            String             @unique
+  passwordHash     String             @map("password_hash")
+  fullName         String             @map("full_name")
+  roleId           String             @map("role_id")
+  role             Role               @relation(fields: [roleId], references: [id])
+  refreshToken     String?            @map("refresh_token")
+  activities       ActivityLog[]
+  renewalsDone     RenewalLog[]       @relation("RenewedByUser")
+  customers        Customer[]
+  vehicles         Vehicle[]
+  policies         InsurancePolicy[]
+  reminders        Reminder[]
+  notifications    Notification[]
+  documents        Document[]
+  insuranceHistory InsuranceHistory[]
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+
+  @@index([email])
+  @@map("users")
+}
+
+model Customer {
+  id              String           @id @default(uuid())
+  userId          String           @map("user_id")
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName        String           @map("full_name")
+  mobileNumber    String           @map("mobile_number")
+  alternateNumber String?          @map("alternate_number")
+  whatsappNumber  String?          @map("whatsapp_number")
+  notes           String?
+  address         CustomerAddress?
+  vehicles        Vehicle[]
+  documents       Document[]
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  @@unique([userId, mobileNumber])
+  @@index([userId])
+  @@index([fullName])
+  @@index([mobileNumber])
+  @@map("customers")
+}
+
+model CustomerAddress {
+  id           String   @id @default(uuid())
+  customerId   String   @unique @map("customer_id")
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  addressLine1 String   @map("address_line1")
+  addressLine2 String?  @map("address_line2")
+  city         String
+  state        String
+  pincode      String
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("customer_addresses")
+}
+
+model Vehicle {
+  id                String             @id @default(uuid())
+  userId            String             @map("user_id")
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customerId        String             @map("customer_id")
+  customer          Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  vehicleNumber     String             @map("vehicle_number")
+  vehicleType       String             @map("vehicle_type") // BIKE, CAR, TRUCK, BUS, OTHER
+  brand             String
+  model             String
+  fuelType          String             @map("fuel_type") // PETROL, DIESEL, CNG, ELECTRIC, HYBRID
+  manufacturingYear Int                @map("manufacturing_year")
+  engineNumber      String?            @unique @map("engine_number")
+  chassisNumber     String?            @unique @map("chassis_number")
+  policies          InsurancePolicy[]
+  history           InsuranceHistory[]
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  @@unique([userId, vehicleNumber])
+  @@index([userId])
+  @@index([vehicleNumber])
+  @@map("vehicles")
+}
+
+model InsuranceCompany {
+  id        String            @id @default(uuid())
+  name      String            @unique
+  logoUrl   String?           @map("logo_url")
+  policies  InsurancePolicy[]
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+
+  @@map("insurance_companies")
+}
+
+model PolicyStatus {
+  id       String            @id @default(uuid())
+  name     String            @unique // "ACTIVE", "EXPIRED", "CANCELLED"
+  policies InsurancePolicy[]
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  @@map("policy_statuses")
+}
+
+model InsurancePolicy {
+  id               String            @id @default(uuid())
+  userId           String            @map("user_id")
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleId        String            @map("vehicle_id")
+  vehicle          Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  companyId        String            @map("company_id")
+  company          InsuranceCompany  @relation(fields: [companyId], references: [id])
+  policyNumber     String            @map("policy_number")
+  startDate        DateTime          @map("start_date")
+  expiryDate       DateTime          @map("expiry_date")
+  premiumAmount    Decimal           @map("premium_amount")
+  idv              Decimal           @map("idv")
+  ncb              Int               @default(0) @map("ncb")
+  commissionRate   Decimal           @map("commission_rate")
+  commissionAmount Decimal           @map("commission_amount")
+  statusId         String            @map("status_id")
+  status           PolicyStatus      @relation(fields: [statusId], references: [id])
+  policyPdfUrl     String?           @map("policy_pdf_url")
+  reminders        Reminder[]
+  history          InsuranceHistory[]
+  oldRenewals      RenewalLog[]      @relation("OldPolicy")
+  newRenewals      RenewalLog[]      @relation("NewPolicy")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  @@unique([userId, policyNumber])
+  @@index([userId])
+  @@index([expiryDate])
+  @@index([policyNumber])
+  @@map("insurance_policies")
+}
+
+model InsuranceHistory {
+  id        String          @id @default(uuid())
+  userId    String          @map("user_id")
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleId String          @map("vehicle_id")
+  vehicle   Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  policyId  String          @map("policy_id")
+  policy    InsurancePolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  action    String // e.g. "CREATED", "RENEWED", "EXPIRED", "CANCELLED"
+  notes     String?
+  createdAt DateTime        @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("insurance_history")
+}
+
+model Reminder {
+  id           String          @id @default(uuid())
+  userId       String          @map("user_id")
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  policyId     String          @map("policy_id")
+  policy       InsurancePolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  reminderType String          @map("reminder_type") // e.g., "30_DAYS", "15_DAYS", "7_DAYS", "3_DAYS", "1_DAY", "EXPIRED"
+  dueDate      DateTime        @map("due_date")
+  status       String          @default("PENDING") // PENDING, SENT, ACKNOWLEDGED
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  @@unique([policyId, reminderType])
+  @@index([userId])
+  @@map("reminders")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String // "UPCOMING_RENEWAL", "EXPIRED_POLICY", "NEW_POLICY"
+  read      Boolean  @default(false)
+  relatedId String?  @map("related_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+model Document {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customerId   String   @map("customer_id")
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  documentType String   @map("document_type") // INSURANCE_PDF, RC_BOOK, DRIVING_LICENSE, OTHER
+  fileName     String   @map("file_name")
+  filePath     String   @map("file_path")
+  fileSize     Int      @map("file_size")
+  mimeType     String   @map("mime_type")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  @@index([userId])
+  @@map("documents")
+}
+
+model RenewalLog {
+  id              String          @id @default(uuid())
+  oldPolicyId     String          @map("old_policy_id")
+  oldPolicy       InsurancePolicy @relation("OldPolicy", fields: [oldPolicyId], references: [id], onDelete: Cascade)
+  newPolicyId     String?         @map("new_policy_id")
+  newPolicy       InsurancePolicy? @relation("NewPolicy", fields: [newPolicyId], references: [id], onDelete: SetNull)
+  renewedAt       DateTime        @default(now()) @map("renewed_at")
+  renewedByUserId String          @map("renewed_by_user_id")
+  renewedByUser   User            @relation("RenewedByUser", fields: [renewedByUserId], references: [id], onDelete: Cascade)
+  notes           String?
+
+  @@map("renewal_logs")
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String // e.g., "CREATE_CUSTOMER", "ADD_POLICY", "RENEW_POLICY"
+  details   String?  // Store JSON as serialized String for SQLite compatibility
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("activity_logs")
+}
