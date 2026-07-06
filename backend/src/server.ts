@@ -20,11 +20,13 @@ app.use(helmet({
 }));
 
 // CORS Configuration
-const allowedOrigins = config.ALLOWED_ORIGINS.split(',');
+const allowedOrigins = config.ALLOWED_ORIGINS.split(',').map(origin => origin.trim().replace(/\/$/, ''));
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Normalize incoming origin by removing trailing slash if present (browsers don't send it, but just in case)
+      const cleanOrigin = origin ? origin.trim().replace(/\/$/, '') : '';
+      if (!origin || allowedOrigins.includes(cleanOrigin)) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
