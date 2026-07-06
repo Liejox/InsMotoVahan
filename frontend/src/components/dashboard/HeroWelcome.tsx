@@ -11,6 +11,8 @@ interface HeroWelcomeProps {
 }
 
 export const HeroWelcome: React.FC<HeroWelcomeProps> = ({ stats }) => {
+  const apiBaseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '');
+
   return (
     <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 lg:p-10 border border-slate-800/30 shadow-xl mb-6 animate-gradient transition-colors duration-200">
       {/* Self-contained styling for CSS keyframe animations */}
@@ -60,7 +62,7 @@ export const HeroWelcome: React.FC<HeroWelcomeProps> = ({ stats }) => {
         {/* Left Side: Portrait Photo (Slide Left + Fade on load, subtle Float infinite) */}
         <div className="flex-shrink-0 flex items-center justify-center anim-photo">
           <img 
-            src="http://localhost:5000/hero-image/Liejo%20S%20Hero.png" 
+            src={`${apiBaseUrl}/hero-image/Liejo%20S%20Hero.png`} 
             alt="Liejo's Portrait" 
             className="max-h-[240px] md:max-h-[300px] lg:max-h-[340px] w-auto object-contain rounded-2xl animate-float shadow-2xl"
             loading="eager"

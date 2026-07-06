@@ -15,7 +15,7 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRY: z.string().default('7d'),
   ALLOWED_ORIGINS: z.string().default('http://localhost:5173'),
   UPLOAD_DIR: z.string().default('./uploads'),
-  HERO_IMAGE_DIR: z.string().default('C:\\Lj\\Imageee'),
+  HERO_IMAGE_DIR: z.string().default(path.join(__dirname, '../../public')),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -25,6 +25,6 @@ if (!parsed.success) {
   process.exit(1);
 }
 
-export const config = parsed.data!;
+export const config = parsed.data;
 export type Config = typeof config;
 export default config;
