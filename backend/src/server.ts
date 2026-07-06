@@ -14,6 +14,9 @@ import { apiLimiter } from './middlewares/rateLimiter';
 
 const app = express();
 
+// Trust proxy for rate limiting behind reverse proxies (like Render)
+app.set('trust proxy', 1);
+
 // 1. Security Middlewares
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
