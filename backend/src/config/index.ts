@@ -25,6 +25,6 @@ if (!parsed.success) {
   process.exit(1);
 }
 
-export const config = parsed.data;
+export const config = parsed.data!;
 export type Config = typeof config;
 export default config;
