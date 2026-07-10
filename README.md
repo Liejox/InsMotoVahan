@@ -13,7 +13,7 @@ A production-ready Full Stack Insurance CRM built to simplify customer managemen
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1)
 ![Prisma](https://img.shields.io/badge/Prisma-2D3748)
 
-🌐 **Live Demo:** https://ins-moto-vahan.vercel.app
+🌐 **Live:** https://ins-moto-vahan.vercel.app
 
 </div>
 
