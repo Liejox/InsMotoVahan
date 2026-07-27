@@ -59,7 +59,7 @@ export const Greeting: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const firstName = user?.fullName ? user.fullName.split(' ')[0] : 'Liejo';
+  const firstName = user?.fullName ? user.fullName.split(' ')[0] : 'Agent';
 
   return (
     <div className="space-y-3">

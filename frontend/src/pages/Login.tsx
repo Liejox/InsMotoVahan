@@ -15,7 +15,7 @@ export const Login: React.FC = () => {
 
   // Gate check: If already logged in, skip login page
   if (accessToken) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +34,7 @@ export const Login: React.FC = () => {
 
       const { user, accessToken: access, refreshToken: refresh } = res.data;
       setAuth(user, access, refresh);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err?.message || 'Login failed. Please check your credentials.');
     } finally {

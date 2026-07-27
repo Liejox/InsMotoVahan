@@ -16,7 +16,7 @@ export const Register: React.FC = () => {
 
   // Gate check
   if (accessToken) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +35,7 @@ export const Register: React.FC = () => {
 
       const { user, accessToken: access, refreshToken: refresh } = res.data;
       setAuth(user, access, refresh);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err?.message || 'Registration failed. Try a different email address.');
     } finally {

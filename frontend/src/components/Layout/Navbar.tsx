@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, Sun, Moon, Bell, Menu, User, Loader2, ArrowRight } from 'lucide-react';
+import { Search, Sun, Moon, Bell, Menu, Loader2, ArrowRight, UserCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { UserAvatar } from '../ui/UserAvatar';
 import api from '../../services/api';
 
 interface NavbarProps {
@@ -42,11 +43,12 @@ export const Navbar: React.FC<NavbarProps> = ({ setSidebarOpen }) => {
   // Derive title from location path
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path === '/') return 'Dashboard';
+    if (path === '/dashboard') return 'Dashboard';
     if (path.startsWith('/customers/')) return 'Customer Profile';
     if (path.startsWith('/customers')) return 'Customer Database';
     if (path.startsWith('/reports')) return 'Reports & Analytics';
     if (path.startsWith('/notifications')) return 'System Notifications';
+    if (path.startsWith('/profile')) return 'Profile Settings';
     return 'Insurance Agent CRM';
   };
 
@@ -296,21 +298,28 @@ export const Navbar: React.FC<NavbarProps> = ({ setSidebarOpen }) => {
         <div className="relative flex items-center pl-2 border-l border-slate-200 dark:border-slate-800" ref={profileMenuRef}>
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            className="flex items-center justify-center rounded-full hover:opacity-80 transition-opacity cursor-pointer"
             aria-label="User menu"
           >
-            <User size={16} />
+            <UserAvatar size="sm" />
           </button>
           
           {showProfileMenu && (
-            <div className="absolute right-0 top-10 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg py-2 z-50 animate-fade-in">
+            <div className="absolute right-0 top-10 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg py-2 z-50 animate-fade-in">
               <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
                 <p className="text-[10px] text-slate-400 font-semibold uppercase">Signed in as</p>
                 <p className="text-xs font-bold text-slate-800 dark:text-white truncate">{user?.fullName || 'Agent'}</p>
               </div>
               <button
+                onClick={() => { navigate('/profile'); setShowProfileMenu(false); }}
+                className="flex items-center w-full px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 text-left transition-colors cursor-pointer gap-2"
+              >
+                <UserCircle size={14} />
+                Profile Settings
+              </button>
+              <button
                 onClick={handleLogout}
-                className="flex items-center w-full px-4 py-2 text-xs font-bold text-red-650 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 text-left transition-colors cursor-pointer"
+                className="flex items-center w-full px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 text-left transition-colors cursor-pointer"
               >
                 Sign Out
               </button>

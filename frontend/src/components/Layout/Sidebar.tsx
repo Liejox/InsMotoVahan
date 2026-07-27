@@ -1,14 +1,16 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Users, 
   Bell, 
   LogOut, 
   ShieldAlert,
-  X 
+  X,
+  UserCircle
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { UserAvatar } from '../ui/UserAvatar';
 import api from '../../services/api';
 
 interface SidebarProps {
@@ -18,6 +20,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { clearAuth, user } = useAuthStore();
 
   const handleLogout = async () => {
@@ -27,18 +30,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       // Ignore network errors on logout
     } finally {
       clearAuth();
+      navigate('/login');
     }
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Customers', path: '/customers', icon: Users },
     { name: 'Notifications', path: '/notifications', icon: Bell },
   ];
 
   const isActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
+    if (path === '/dashboard') {
+      return location.pathname === '/dashboard';
     }
     return location.pathname.startsWith(path);
   };
@@ -59,7 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       `}>
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-slate-200 dark:border-slate-800">
-          <Link to="/" className="flex items-center space-x-2" onClick={() => setIsOpen(false)}>
+          <Link to="/dashboard" className="flex items-center space-x-2" onClick={() => setIsOpen(false)}>
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-600 text-white">
               <ShieldAlert size={20} />
             </div>
@@ -77,19 +81,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
         {/* User profile brief */}
         <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 font-bold rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300">
-              {user?.fullName?.charAt(0) || 'U'}
-            </div>
-            <div className="overflow-hidden">
-              <h4 className="font-semibold text-sm text-slate-900 dark:text-white truncate">
+          <Link
+            to="/profile"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center space-x-3 group"
+          >
+            <UserAvatar size="md" />
+            <div className="overflow-hidden flex-1">
+              <h4 className="font-semibold text-sm text-slate-900 dark:text-white truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                 {user?.fullName || 'User'}
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
                 {user?.role?.toLowerCase() || 'agent'}
               </p>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Sidebar Navigation */}
@@ -117,6 +123,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               </Link>
             );
           })}
+
+          {/* Profile Settings link */}
+          <Link
+            to="/profile"
+            onClick={() => setIsOpen(false)}
+            className={`
+              flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 group
+              ${location.pathname === '/profile'
+                ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 shadow-sm' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'}
+            `}
+          >
+            <UserCircle size={20} className={`
+              mr-3 transition-colors
+              ${location.pathname === '/profile' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 group-hover:text-slate-500 dark:group-hover:text-slate-300'}
+            `} />
+            Profile Settings
+          </Link>
         </nav>
 
         {/* Sidebar Footer */}
