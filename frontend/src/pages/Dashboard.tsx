@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -15,6 +15,7 @@ import {
 
 import api from '../services/api';
 import HeroWelcome from '../components/dashboard/HeroWelcome';
+import VariableProximity from '../components/ui/VariableProximity';
 
 interface DashboardStats {
   todayRenewalsCount: number;
@@ -33,6 +34,7 @@ interface DashboardStats {
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [selectedRange, setSelectedRange] = useState<'today' | 'tomorrow' | '7days' | '15days' | '30days' | 'expired'>('30days');
+  const overviewRef = useRef<HTMLDivElement>(null);
 
   // 1. Fetch Dynamic Dashboard statistics
   const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
@@ -132,8 +134,19 @@ export const Dashboard: React.FC = () => {
 
       {/* Top Banner Row */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-        <div>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Overview</h2>
+        <div ref={overviewRef} style={{ position: 'relative' }}>
+          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {React.createElement(VariableProximity as any, {
+              label: "Overview",
+              containerRef: overviewRef,
+              fromFontVariationSettings: "'wght' 700",
+              toFontVariationSettings: "'wght' 900",
+              radius: 120,
+              falloff: "linear",
+              style: { color: 'inherit' },
+            })}
+          </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">Real-time business stats and renewal center</p>
         </div>
         <button

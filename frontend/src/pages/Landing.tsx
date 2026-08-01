@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { ShieldAlert, ArrowRight, CheckCircle, Zap, Bell, BarChart3, Shield, Users, ChevronDown } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import ScrollFloat from '../components/ui/ScrollFloat';
+import ScrollReveal from '../components/ui/ScrollReveal';
 
 /* ─── Scroll-reveal hook ─────────────────────────────────────── */
 function useInView(threshold = 0.15) {
@@ -254,6 +256,39 @@ const LandingContent: React.FC<{ navigate: ReturnType<typeof useNavigate> }> = (
           border: 1px dashed rgba(56, 189, 248, 0.15);
           animation: lp-spin-slow 35s linear infinite reverse;
         }
+        /* ScrollFloat hero title overrides */
+        .lp-scroll-float-title {
+          margin: 0 !important;
+          overflow: visible !important;
+        }
+        .lp-scroll-float-text {
+          font-size: clamp(2.5rem, 6vw, 4.5rem) !important;
+          font-weight: 900 !important;
+          line-height: 1.05 !important;
+          color: #fff;
+          letter-spacing: -0.02em;
+        }
+        /* ScrollReveal features section overrides */
+        .lp-features-reveal {
+          margin: 0 0 1rem !important;
+        }
+        .lp-features-reveal-text {
+          font-size: clamp(2rem, 4vw, 3rem) !important;
+          font-weight: 900 !important;
+          line-height: 1.15 !important;
+          color: #fff;
+          letter-spacing: -0.01em;
+        }
+        /* ScrollReveal how-it-works step descriptions */
+        .lp-step-reveal {
+          margin: 0 !important;
+        }
+        .lp-step-reveal-text {
+          font-size: 0.875rem !important;
+          font-weight: 400 !important;
+          line-height: 1.6 !important;
+          color: #94a3b8;
+        }
       `}</style>
 
       {/* ── Sticky Navbar ──────────────────────────────────────────── */}
@@ -324,12 +359,23 @@ const LandingContent: React.FC<{ navigate: ReturnType<typeof useNavigate> }> = (
           Insurance Agent CRM — Simplified
         </div>
 
-        {/* Main headline */}
-        <h1 className="lp-hero-h1 text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] max-w-4xl">
-          Manage Every Policy.{' '}
-          <br className="hidden md:block" />
-          <span className="lp-shimmer-text">Miss Nothing.</span>
-        </h1>
+        {/* Main headline — ScrollFloat animates each character in on scroll */}
+        <div className="lp-hero-h1 max-w-4xl">
+          <ScrollFloat
+            animationDuration={1}
+            ease="back.inOut(2)"
+            scrollStart="top bottom"
+            scrollEnd="bottom center"
+            stagger={0.03}
+            containerClassName="lp-scroll-float-title"
+            textClassName="lp-scroll-float-text"
+          >
+            Manage Every Policy.
+          </ScrollFloat>
+          <div className="lp-hero-h1" style={{ marginTop: '-0.5rem' }}>
+            <span className="lp-shimmer-text text-5xl md:text-6xl lg:text-7xl font-black tracking-tight">Miss Nothing.</span>
+          </div>
+        </div>
 
         {/* Sub-headline */}
         <p className="lp-hero-sub mt-6 text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed">
@@ -456,10 +502,16 @@ const LandingContent: React.FC<{ navigate: ReturnType<typeof useNavigate> }> = (
               <Zap size={11} />
               Everything You Need
             </div>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight">
-              Built for the modern{' '}
-              <span className="lp-shimmer-text">insurance agent</span>
-            </h2>
+            <ScrollReveal
+              baseOpacity={0}
+              enableBlur={true}
+              baseRotation={3}
+              blurStrength={6}
+              containerClassName="lp-features-reveal"
+              textClassName="lp-features-reveal-text"
+            >
+              Built for the modern insurance agent
+            </ScrollReveal>
             <p className="mt-4 text-slate-400 max-w-xl mx-auto text-base">
               Every feature designed around your daily workflow — from first policy booking to renewal follow-ups.
             </p>
@@ -556,7 +608,17 @@ const LandingContent: React.FC<{ navigate: ReturnType<typeof useNavigate> }> = (
                     </div>
                   </div>
                   <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">{step.desc}</p>
+                  <ScrollReveal
+                    baseOpacity={0.05}
+                    enableBlur={true}
+                    baseRotation={2}
+                    blurStrength={4}
+                    containerClassName="lp-step-reveal"
+                    textClassName="lp-step-reveal-text"
+                    wordAnimationEnd="bottom center"
+                  >
+                    {step.desc}
+                  </ScrollReveal>
                 </div>
               ))}
             </div>

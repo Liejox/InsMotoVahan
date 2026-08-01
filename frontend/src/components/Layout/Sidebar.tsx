@@ -1,17 +1,14 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  LayoutDashboard, 
-  Users, 
-  Bell, 
   LogOut, 
   ShieldAlert,
   X,
-  UserCircle
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { UserAvatar } from '../ui/UserAvatar';
 import api from '../../services/api';
+import LineSidebar from '../ui/LineSidebar';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -35,17 +32,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Customers', path: '/customers', icon: Users },
-    { name: 'Notifications', path: '/notifications', icon: Bell },
+    { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Customers', path: '/customers' },
+    { name: 'Notifications', path: '/notifications' },
+    { name: 'Profile Settings', path: '/profile' },
   ];
 
-  const isActive = (path: string) => {
-    if (path === '/dashboard') {
-      return location.pathname === '/dashboard';
-    }
-    return location.pathname.startsWith(path);
-  };
+  // Compute which nav item index is currently active based on the route
+  const activeNavIndex = navItems.findIndex(item => {
+    if (item.path === '/dashboard') return location.pathname === '/dashboard';
+    return location.pathname.startsWith(item.path);
+  });
 
   return (
     <>
@@ -98,49 +95,35 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           </Link>
         </div>
 
-        {/* Sidebar Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            return (
-              <Link
-                key={item.name}
-                to={item.path}
-                onClick={() => setIsOpen(false)}
-                className={`
-                  flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 group
-                  ${active 
-                    ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 shadow-sm' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'}
-                `}
-              >
-                <Icon size={20} className={`
-                  mr-3 transition-colors
-                  ${active ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 group-hover:text-slate-500 dark:group-hover:text-slate-300'}
-                `} />
-                {item.name}
-              </Link>
-            );
-          })}
-
-          {/* Profile Settings link */}
-          <Link
-            to="/profile"
-            onClick={() => setIsOpen(false)}
-            className={`
-              flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 group
-              ${location.pathname === '/profile'
-                ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 shadow-sm' 
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'}
-            `}
-          >
-            <UserCircle size={20} className={`
-              mr-3 transition-colors
-              ${location.pathname === '/profile' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 group-hover:text-slate-500 dark:group-hover:text-slate-300'}
-            `} />
-            Profile Settings
-          </Link>
+        {/* Sidebar Navigation — LineSidebar with proximity effect */}
+        <nav className="flex-1 px-4 py-6 overflow-y-auto">
+          <LineSidebar
+            items={navItems.map(item => item.name)}
+            accentColor="#638acc"
+            textColor="#64748b"
+            markerColor="#334155"
+            showIndex={false}
+            showMarker={true}
+            proximityRadius={90}
+            maxShift={14}
+            falloff="smooth"
+            markerLength={28}
+            markerGap={8}
+            tickScale={0.5}
+            scaleTick={true}
+            itemGap={4}
+            fontSize={0.875}
+            smoothing={120}
+            defaultActive={activeNavIndex >= 0 ? activeNavIndex : null as any}
+            onItemClick={(_index: number, label: string) => {
+              const item = navItems.find(n => n.name === label);
+              if (item) {
+                navigate(item.path);
+                setIsOpen(false);
+              }
+            }}
+            className="sidebar-line-nav"
+          />
         </nav>
 
         {/* Sidebar Footer */}

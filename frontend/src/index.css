@@ -63,3 +63,22 @@
 .animate-fade-in {
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* ── LineSidebar sidebar nav overrides ── */
+/* Light mode: dimmer text/markers that brighten on proximity */
+.sidebar-line-nav .line-sidebar__label {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Dark mode: flip marker + text colors */
+.dark .sidebar-line-nav {
+  --text-color: #94a3b8;
+  --marker-color: #1e293b;
+  --accent-color: #638acc;
+}
+
+/* Active item: keep accent color fully */
+.sidebar-line-nav .line-sidebar__item[aria-current="true"] .line-sidebar__label {
+  font-weight: 700;
+}
